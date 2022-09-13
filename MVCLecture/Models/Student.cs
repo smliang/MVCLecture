@@ -1,4 +1,4 @@
-﻿namespace MVCLecture.Data
+﻿namespace MVCLecture.Models
 {
     public class Student
     {

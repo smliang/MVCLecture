@@ -10,87 +10,95 @@ using MVCLecture.Models;
 
 namespace MVCLecture.Controllers
 {
-    public class StudentsController : Controller
+    public class GradesController : Controller
     {
         private readonly ApplicationDbContext _context;
 
-        public StudentsController(ApplicationDbContext context)
+        public GradesController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        // GET: Students
+        // GET: Grades
         public async Task<IActionResult> Index()
         {
-            return _context.Student != null ?
-                        View(await _context.Student.ToListAsync()) :
-                        Problem("Entity set 'ApplicationDbContext.Student'  is null.");
+            var applicationDbContext = _context.Grade.Include(g => g.Course).Include(g => g.Student);
+            return View(await applicationDbContext.ToListAsync());
         }
 
-        // GET: Students/Details/5
+        // GET: Grades/Details/5
         public async Task<IActionResult> Details(int? id)
         {
-            if (id == null || _context.Student == null)
+            if (id == null || _context.Grade == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Student
+            var grade = await _context.Grade
+                .Include(g => g.Course)
+                .Include(g => g.Student)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (student == null)
+            if (grade == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(grade);
         }
 
-        // GET: Students/Create
+        // GET: Grades/Create
         public IActionResult Create()
         {
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Name");
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Name");
             return View();
         }
 
-        // POST: Students/Create
+        // POST: Grades/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,Name,DOB,Major")] Student student)
+        public async Task<IActionResult> Create([Bind("Id,GradeValue,StudentId,CourseId")] Grade grade)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(student);
+                _context.Add(grade);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(student);
+            //SelectList(obj, value stored, value displayed)
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Name", grade.CourseId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Name", grade.StudentId);
+            return View(grade);
         }
 
-        // GET: Students/Edit/5
+        // GET: Grades/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null || _context.Student == null)
+            if (id == null || _context.Grade == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Student.FindAsync(id);
-            if (student == null)
+            var grade = await _context.Grade.FindAsync(id);
+            if (grade == null)
             {
                 return NotFound();
             }
-            return View(student);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Name", grade.CourseId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Name", grade.StudentId);
+            return View(grade);
         }
 
-        // POST: Students/Edit/5
+        // POST: Grades/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name,DOB,Major")] Student student)
+        public async Task<IActionResult> Edit(int id, [Bind("Id,GradeValue,StudentId,CourseId")] Grade grade)
         {
-            if (id != student.Id)
+            if (id != grade.Id)
             {
                 return NotFound();
             }
@@ -99,12 +107,12 @@ namespace MVCLecture.Controllers
             {
                 try
                 {
-                    _context.Update(student);
+                    _context.Update(grade);
                     await _context.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!StudentExists(student.Id))
+                    if (!GradeExists(grade.Id))
                     {
                         return NotFound();
                     }
@@ -115,49 +123,53 @@ namespace MVCLecture.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(student);
+            ViewData["CourseId"] = new SelectList(_context.Course, "Id", "Name", grade.CourseId);
+            ViewData["StudentId"] = new SelectList(_context.Student, "Id", "Name", grade.StudentId);
+            return View(grade);
         }
 
-        // GET: Students/Delete/5
+        // GET: Grades/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
-            if (id == null || _context.Student == null)
+            if (id == null || _context.Grade == null)
             {
                 return NotFound();
             }
 
-            var student = await _context.Student
+            var grade = await _context.Grade
+                .Include(g => g.Course)
+                .Include(g => g.Student)
                 .FirstOrDefaultAsync(m => m.Id == id);
-            if (student == null)
+            if (grade == null)
             {
                 return NotFound();
             }
 
-            return View(student);
+            return View(grade);
         }
 
-        // POST: Students/Delete/5
+        // POST: Grades/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            if (_context.Student == null)
+            if (_context.Grade == null)
             {
-                return Problem("Entity set 'ApplicationDbContext.Student'  is null.");
+                return Problem("Entity set 'ApplicationDbContext.Grade'  is null.");
             }
-            var student = await _context.Student.FindAsync(id);
-            if (student != null)
+            var grade = await _context.Grade.FindAsync(id);
+            if (grade != null)
             {
-                _context.Student.Remove(student);
+                _context.Grade.Remove(grade);
             }
 
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool StudentExists(int id)
+        private bool GradeExists(int id)
         {
-            return (_context.Student?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Grade?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }

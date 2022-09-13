@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using MVCLecture.Data;
+using MVCLecture.Models;
 
 namespace MVCLecture.Data
 {
@@ -10,6 +10,10 @@ namespace MVCLecture.Data
             : base(options)
         {
         }
-        public DbSet<MVCLecture.Data.Student>? Student { get; set; }
+        public DbSet<Student>? Student { get; set; }
+        public DbSet<Grade>? Grade { get; set; }
+        public DbSet<MVCLecture.Models.Course>? Course { get; set; }
+        public DbSet<MVCLecture.Models.CourseStudent>? CourseStudent { get; set; }
+
     }
 }
