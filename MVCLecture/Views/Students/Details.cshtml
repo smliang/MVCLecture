@@ -1,4 +1,4 @@
-﻿@model Student
+﻿@model StudentCourseGradesVM
 
 @{
     ViewData["Title"] = "Details";
@@ -7,31 +7,92 @@
 
 <h1>Details</h1>
 
+
 <div>
     <h4>Student</h4>
     <hr />
     <dl class="row">
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Name)
+            @Html.DisplayNameFor(model => model.Student.Name)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Name)
+            @Html.DisplayFor(model => model.Student.Name)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DOB)
+            @Html.DisplayNameFor(model => model.Student.DOB)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DOB)
+            @Html.DisplayFor(model => model.Student.DOB)
         </dd>
         <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Major)
+            @Html.DisplayNameFor(model => model.Student.Major)
         </dt>
         <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Major)
+            @Html.DisplayFor(model => model.Student.Major)
         </dd>
     </dl>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model?.Student.Id">Edit</a> |
+        <a asp-action="Index">Back to List</a>
+    </div>
+    <br/>
 </div>
+
+
 <div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <h4>Courses</h4>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Courses[0].Name)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Courses)
+            {
+                <tr>
+                    <td>
+                        <a asp-action="Details"  asp-controller="Courses" asp-route-id="@item.Id">@Html.DisplayFor(modelItem => item.Name)</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div>
+<h4>Grades</h4>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Grades[0].GradeValue)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Grades[0].Student)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Grades[0].Course)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Grades)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Course.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.GradeValue)
+                    </td>      
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>

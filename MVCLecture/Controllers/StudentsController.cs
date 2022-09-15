@@ -42,7 +42,16 @@ namespace MVCLecture.Controllers
                 return NotFound();
             }
 
-            return View(student);
+            StudentCourseGradesVM scgVM = new StudentCourseGradesVM();
+            scgVM.Student = student;
+
+            var sGrades = await _context.Grade.Include(g => g.Course).Where(g => g.StudentId == student.Id).Where(c => c.StudentId == student.Id).ToListAsync();
+            scgVM.Grades = sGrades;
+
+            var sCourses = await _context.CourseStudent.Include(c => c.Course).ToListAsync();
+            scgVM.Courses = sCourses.Select(x => x.Course).ToList();
+
+            return View(scgVM);
         }
 
         // GET: Students/Create
