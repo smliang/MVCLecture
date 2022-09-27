@@ -78,7 +78,7 @@ namespace MVCLecture.Controllers
         }
 
         // GET: Students/Edit/5
-        [Authorize(Roles = Constants.ADMIN_ROLE)]
+        [Authorize(Policy = Constants.MANAGER_AND_ADMIN_POLICY)]
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null || _context.Student == null)

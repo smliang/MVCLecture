@@ -1,8 +1,17 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using MVCLecture;
 using MVCLecture.Data;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(Constants.MANAGER_AND_ADMIN_POLICY, policy =>
+    {
+    policy.RequireRole(Constants.MANAGER_ROLE, Constants.ADMIN_ROLE);
+});
+});
 
 // Add services to the container.
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -11,6 +20,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 builder.Services.AddControllersWithViews();
 
